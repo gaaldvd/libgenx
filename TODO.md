@@ -1,6 +1,8 @@
-# readme
+# todo
 
-- installation: python, pyside6, pip
+## readme
+
+- installation: python, Qt6, pip
   - install.sh
     - pipenv: `pip install pipenv --user`
     - pipenv setup: `pipenv sync`
@@ -8,4 +10,18 @@
 - usage
   - config file, cli, gui
   - update through git
-  - update virtualenn through pipenv: `pipenv update`
+  - update virtualenv through pipenv: `pipenv update`
+
+## ui
+
+- toolbar
+  - config: download location, preferred/filter file type
+  - about
+  - close
+- input
+  - search fields: author, title
+- output
+  - list (QTableWidget)
+    - double-click: download preferred file type from primary mirror
+    - context menu: alternative mirrors, file types
+- statusbar
