@@ -9,9 +9,9 @@ print("\nNr.  Author                  Title                             Year   P
 i = 0
 for result in results:
     i += 1
-    print(f"{i:>3}. {result['Author'][:20] + '...' if len(result['Author']) > 20 else result['Author']:<23}"
-          f" {result['Title'][:30] + '...' if len(result['Title']) > 30 else result['Title']:<33}"
-          f" {result['Year']:<4} {result['Pages']:>9} {result['Extension']}")
+    print(f"{result['Author'][:20] + '...' if len(result['Author']) > 20 else result['Author']:<23}" +
+          f" {result['Title'][:30] + '...' if len(result['Title']) > 30 else result['Title']:<33}" +
+          f" {result['Year']:<9} {result['Pages']:>9} {result['Extension']}")
 
-lgx.download(int(input("\ndownload: ")) - 1, s, results)
+lgx.download(int(input("\ndownload: ")) - 1, results)
 # lgx.download(1, s, results)

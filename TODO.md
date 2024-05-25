@@ -2,26 +2,25 @@
 
 ## readme
 
-- installation: python, Qt6, pip
-  - install.sh
-    - pipenv: `pip install pipenv --user`
-    - pipenv setup: `pipenv sync`
-    - make start.sh executable: `chmod -x start.sh`
-- usage
-  - config file, cli, gui
-  - update through git
-  - update virtualenv through pipenv: `pipenv update`
+### installation 
+- install from package manager: git, python, Qt6, pip, pipenv (`pip install pipenv --user`)
+- clone git repository: `git clone https://github.com/strugamano/libgenx.git`
+- run `sh install.sh`
 
-## ui
+### usage
+- cli
+- gui: `./ligenx.sh`
+- config file: {"downloadDir": "/home/<user>/<directory>", "pdfOnly": <true/false>}
+- update script: `./update.sh`
 
-- toolbar
-  - config: download location, preferred/filter file type
-  - about
-  - close
-- input
-  - search fields: author, title
-- output
-  - list (QTableWidget)
-    - double-click: download preferred file type from primary mirror
-    - context menu: alternative mirrors, file types
-- statusbar
+## scripts
+
+### libgenx-gui.py
+- connect show_details() to right-click on list items?
+- itemSelectionChanged() on listwidget
+  - new search -> currentRow() runs out of range
+  - click -> show_details() runs twice
+- try to reimplement context menu with customContextMenuRequested() (https://wiki.python.org/moin/PyQt/Handling%20context%20menus)
+
+### libgenx-cli.py
+- the whole thing...

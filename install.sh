@@ -1,7 +1,8 @@
-echo "Installing pipenv..."
-pip install pipenv --user
-echo "Setting up pipenv..."
+echo "> Setting up pipenv..."
+pipenv lock
 pipenv sync
-echo "Configuring start script priviliges..."
+echo "> Configuring privileges..."
 chmod -x libgenx.sh
-echo "Done."
+chmod -x update.sh
+
+echo "> Done. Goodbye!"
