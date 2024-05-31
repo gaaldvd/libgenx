@@ -21,6 +21,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.results = []
         self.links = {}
 
+        self.args = lgx.parse_args(sys.argv[1:]) if sys.argv[2] or sys.argv[4] else None
+        print(self.args) if self.args else print("no args")
+
         self.config = lgx.load_config()
         self.inDownDir.setText(self.config['downloadDir'])
         self.checkPdf.setChecked(True) if self.config['pdfOnly'] else self.checkPdf.setChecked(False)
@@ -108,14 +111,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @Slot()  # open the details pane on item selection todo itemSelectionChanged messes things up...
     def show_details(self):
-        self.details_pane.show()
         self.config_pane.hide()
-        result = self.results[self.output.currentRow()]
-        self.details.setText(f"{result['Author']}: {result['Title']}\n"
-                             f"{result['Publisher']} ({result['Year']}) - "
-                             f"{result['Language']}, {result['Pages']} pages")
-        s = LibgenSearch()
-        self.links = s.resolve_download_links(self.results[self.output.currentRow()])
+        self.details_pane.show()
+        try:
+            result = self.results[self.output.currentRow()]
+            self.details.setText(f"{result['Author']}: {result['Title']}\n"
+                                 f"{result['Publisher']} ({result['Year']}) - "
+                                 f"{result['Language']}, {result['Pages']} pages")
+            s = LibgenSearch()
+            self.links = s.resolve_download_links(self.results[self.output.currentRow()])
+        except IndexError:
+            pass
+        except UnboundLocalError:
+            pass
 
     @Slot()  # search button / return pressed
     def search(self):

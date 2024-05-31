@@ -1,6 +1,23 @@
+import getopt
 import json
 from libgen_api import LibgenSearch
 from urllib.request import urlretrieve
+
+
+def parse_args(args):
+    flags = "a:t:"
+    long_flags = ["author=", "title="]
+    search_fields = {'author': "", 'title': ""}
+    try:
+        arguments, values = getopt.getopt(args, flags, long_flags)
+        for arg, value in arguments:
+            if arg in ("-a", "-author"):
+                search_fields['author'] = value
+            elif arg in ("-t", "-title"):
+                search_fields['title'] = value
+        return search_fields
+    except getopt.error as err:
+        print(str(err))
 
 
 def load_config():
