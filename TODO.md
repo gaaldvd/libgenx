@@ -8,7 +8,7 @@
 - run `sh install.sh`
 
 ### usage
-- start in cli/gui mode with optional search arguments: `./libgenx.sh [-c/-g] [-a author] [-t title]`
+- start in cli/gui mode with optional search arguments: `./libgenx.sh [-c/-g] [-a 'author'] [-t 'title']`
 - config file: `{"downloadDir": "</home/user/directory>", "pdfOnly": <true/false>}`
 - update script: `./update.sh`
 

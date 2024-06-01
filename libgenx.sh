@@ -11,7 +11,7 @@ while getopts "cga:t:" flag; do
     a) author="$OPTARG";;
     t) title="$OPTARG";;
     *)
-      echo "Usage: $0 [-c/-g] [-a author] [-t title]"
+      echo "> Usage: $0 [-c/-g] [-a author] [-t title]"
       exit 1;;
   esac
 done

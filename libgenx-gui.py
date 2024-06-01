@@ -21,15 +21,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.results = []
         self.links = {}
 
-        self.args = lgx.parse_args(sys.argv[1:]) if sys.argv[2] or sys.argv[4] else None
-        print(self.args) if self.args else print("no args")
-
         self.config = lgx.load_config()
         self.inDownDir.setText(self.config['downloadDir'])
         self.checkPdf.setChecked(True) if self.config['pdfOnly'] else self.checkPdf.setChecked(False)
 
         spacer = QWidget()  # spacer for toolbar items
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        self.args = lgx.parse_args(sys.argv[1:]) if sys.argv[2] or sys.argv[4] else None
+        print(self.args) if self.args else print("no args")
+
+        if self.args:
+            self.inAuthor.setText(self.args['author'])
+            self.inTitle.setText(self.args['title'])
+            self.search()
 
         # TOOLBAR ACTIONS
 
