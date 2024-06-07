@@ -1,17 +1,27 @@
+import sys
 import libgenx_common as lgx
 from libgen_api import LibgenSearch
 
-s = LibgenSearch()
-results = s.search_title(input("\ntitle: "))
-# results = s.search_title("pride and prejudice")
+results, config = [], lgx.load_config()
 
-print("\nNr.  Author                  Title                             Year   Pages   Extension\n")
-i = 0
-for result in results:
-    i += 1
-    print(f"{result['Author'][:20] + '...' if len(result['Author']) > 20 else result['Author']:<23}" +
-          f" {result['Title'][:30] + '...' if len(result['Title']) > 30 else result['Title']:<33}" +
-          f" {result['Year']:<9} {result['Pages']:>9} {result['Extension']}")
+args = lgx.parse_args(sys.argv[1:]) if len(sys.argv) > 1 and (sys.argv[2] or sys.argv[4]) else None
 
-lgx.download(int(input("\ndownload: ")) - 1, results)
-# lgx.download(1, s, results)
+if args:
+    results = lgx.search(args['author'], args['title'], config['pdfOnly'])
+else:
+    results = lgx.search(input("  Author: "), input("  Title: "), config['pdfOnly'])
+
+if results:
+    print("\n  Nr. Author                  Title                             Year Pages    Extension ID\n")
+    i = 0
+    for result in results:
+        i += 1
+        print(f"  {i:<3} {result['Label']}")
+
+try:
+    n = int(input("\n> Choose Nr. to download or press Return to exit: ")) - 1
+    s = LibgenSearch()
+    lgx.download(results[n], config['downloadDir'], s.resolve_download_links(results[n])['GET'])
+    sys.exit("> Goodbye!")
+except ValueError:
+    sys.exit("> Goodbye!")

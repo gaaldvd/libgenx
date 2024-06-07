@@ -20,6 +20,7 @@
   - arrow keys >> doesn't refresh details
   - click >> show_details() runs twice
 - try to reimplement context menu with customContextMenuRequested() (https://wiki.python.org/moin/PyQt/Handling%20context%20menus)
+- about dialog box
 
-### libgenx-cli.py
-- the whole thing...
+### libgenx_common.py
+- implement search function with both author and title (cross-filter author and title results)

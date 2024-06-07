@@ -18,18 +18,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config_pane.hide()
         self.details_pane.hide()
         self.inTitle.setFocus()
-        self.results = []
-        self.links = {}
+        self.results, self.links, self.config = [], {}, lgx.load_config()
 
-        self.config = lgx.load_config()
         self.inDownDir.setText(self.config['downloadDir'])
         self.checkPdf.setChecked(True) if self.config['pdfOnly'] else self.checkPdf.setChecked(False)
 
         spacer = QWidget()  # spacer for toolbar items
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        self.args = lgx.parse_args(sys.argv[1:]) if sys.argv[2] or sys.argv[4] else None
-        print(self.args) if self.args else print("no args")
+        self.args = lgx.parse_args(sys.argv[1:]) if len(sys.argv) > 1 and (sys.argv[2] or sys.argv[4]) else None
 
         if self.args:
             self.inAuthor.setText(self.args['author'])
@@ -88,7 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # TOOLBAR ACTION SLOTS
 
     @Slot()  # exit
-    def exit_action(self): sys.exit("Goodbye!")
+    def exit_action(self): sys.exit("> Goodbye!")
 
     @Slot()  # about todo open dialog window
     def about_action(self): print("About...")
@@ -146,12 +143,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if results:
             self.statusbar.showMessage(f"Results: {len(results)}")
             for result in results:
-                if self.config['pdfOnly'] and result['Extension'] != "pdf":
-                    continue
-                else:
-                    item = QListWidgetItem(result['Label'])
-                    self.output.addItem(item)
-                    self.results.append(result)
+                item = QListWidgetItem(result['Label'])
+                self.output.addItem(item)
+                self.results.append(result)
 
         # self.inAuthor.clear()
         # self.inTitle.clear()
