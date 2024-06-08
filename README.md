@@ -20,14 +20,22 @@ The [icons](https://store.kde.org/p/2068651) used in the project are open source
 
 Both modes can be started from the libgenx folder (if the folder is not added to PATH) using console arguments: `./libgenx.sh [-c/-g] [-a 'author'] [-t 'title']`
 
-The author and title arguments are optional. Unfortunately, the libgen-api library only parses the first 25 hits from the LibGen website, so only these results will be displayed (this is something that could be upgraded in the future). Also, searching based on both author and title is not yet implemented, as of now only one of the flags should be used (-a or -t).
+The author and title arguments are optional. Unfortunately, the libgen-api library only parses the first 25 hits from the LibGen website, so only these results will be displayed (this is something that [could be upgraded](https://github.com/strugamano/libgenx/blob/main/TODO.md#general) in the future). Also, searching based on both author and title is [not yet implemented](https://github.com/strugamano/libgenx/blob/main/TODO.md#libgenx-common), as of now only one of the flags should be used (-a or -t).
 
 The config.json file contains the default download directory and the pdf-only option. These can be changed manually or in the GUI app. 
 
 ### GUI
 
-The user interface is straightforward. 
+The user interface is straightforward. The config pane can be opened from the toolbar. Search results are listed under the input fields. Any item can be downloaded by double-clicking on it. If the default download mirror doesn't work for some reason, alternate options are listed for every item in the right-click context menu.
 
 ### CLI
 
+The console mode can be used with or without the optional arguments, [as mentioned above](#Usage) in the beginning of the section.
+
 ### Updating
+
+The update.sh file prompts the user, then updates the git repository and the Python packages: `./update.sh`
+
+## Development
+
+Feel free to clone or fork the repository. The long-term goal could be to expand the search results to [SciHub](https://sci-hub.se/) and other such sites and make the application into something like an all-around pirating interface for intellectuals. Most of the current issues are listed in the [TODO file](https://github.com/strugamano/libgenx/blob/main/TODO.md).

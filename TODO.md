@@ -1,20 +1,12 @@
 # todo
 
-## readme
-
-### installation 
-- install from package manager: git, python, Qt6, pip, pipenv (`pip install pipenv --user`)
-- clone git repository: `git clone https://github.com/strugamano/libgenx.git`
-- run `sh install.sh`
-
-### usage
-- start in cli/gui mode with optional search arguments: `./libgenx.sh [-c/-g] [-a 'author'] [-t 'title']`
-- config file: `{"downloadDir": "</home/user/directory>", "pdfOnly": <true/false>}`
-- update script: `./update.sh`
+## general
+- fork libgen-api or develop a library to parse more than 25 hits from the LibGen website
+- develop Windows version
 
 ## scripts
 
-### libgenx-gui.py
+### libgenx-gui
 - connect show_details() to right-click on list items (?)
 - itemSelectionChanged() on listwidget
   - arrow keys >> doesn't refresh details
@@ -22,5 +14,8 @@
 - try to reimplement context menu with customContextMenuRequested() (https://wiki.python.org/moin/PyQt/Handling%20context%20menus)
 - about dialog box
 
-### libgenx_common.py
+### libgenx_common
 - implement search function with both author and title (cross-filter author and title results)
+
+### update
+- prompt flags to sys.argv (y/n for both updates)
