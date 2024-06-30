@@ -1,7 +1,6 @@
 # todo
 
 ## general
-- fork libgen-api or develop a library to parse more than 25 hits from the LibGen website
 - develop Windows version
 
 ## scripts
