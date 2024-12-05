@@ -1,6 +1,12 @@
 .directory
 /*/.directory
-.vscode
 .idea
 __pycache__
 /*/__pycache__
+backup/*
+docs/*
+!docs/requirements.txt
+!docs/source
+docs/source/*
+!docs/source/conf.py
+!docs/source/index.rst
