@@ -1,8 +1,10 @@
-# libgenx - Library Genesis Explorer
+# LibGenX
 
-**A simple GUI application to download content from [Library Genesis](https://libgen.is/).**
+**Library Genesis Explorer**: A simple CLI/GUI application to download content from [Library Genesis](https://libgen.is/).
 
-The [icons](https://store.kde.org/p/2068651) used in the project are open source.
+The [icons](https://store.kde.org/p/2068651) used in the application are open source.
+
+**Contents:**
 
 > [!NOTE]
-> Under development!
+> *Under development!*

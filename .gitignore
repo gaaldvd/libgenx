@@ -1,9 +1,11 @@
 .directory
 /*/.directory
-.idea
-__pycache__
-/*/__pycache__
+__pycache__/*
+/*/__pycache__/*
+.idea/*
+
 backup/*
+
 docs/*
 !docs/requirements.txt
 !docs/source
