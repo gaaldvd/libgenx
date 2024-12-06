@@ -36,6 +36,8 @@ echo "> Pipfile verification... $(pipenv verify)"
 
 # show package info
 echo "> libgentools: $(pipenv run pip show libgentools)"
+echo "> beautifulsoup4: $(pipenv run pip show beautifulsoup4)"
+echo "> colorama: $(pipenv run pip show colorama)"
 # ...
 
 echo "> Done. Goodbye!"
