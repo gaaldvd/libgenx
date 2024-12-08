@@ -6,8 +6,8 @@
 
 ### cli
 
-- handle exceptions: new SearchRequest instance
-- listing
 - filtering
+  - handle exceptions
+  - get filtering sequence from user
 
 ### gui
