@@ -3,9 +3,11 @@ LibGenX CLI script.
 """
 
 from sys import exit as close
+from time import sleep
 from colorama import Style, Fore
 from libgentools import SearchRequest, Results, QueryError, FilterError
 from libgenx_common import get_query_arg
+import json  # TEMP
 
 
 def list_entries(entries):
@@ -27,6 +29,16 @@ def list_entries(entries):
               f" {year:<4} {pp[:8]:<8} {ext:<9} {eid:<10}")
 
 
+def parse_filter_seq(seq):
+    """Interpret sequence and return a standard filter dictionary."""
+    filters = {}  # TEMP
+    mode = "exact"  # TEMP
+    # -x -a Jane Austen -e pdf
+    seq = seq.split()
+    print(seq)
+    return filters, mode
+
+
 def main():
     """Main function of the LibGenX CLI script."""
     print(Style.BRIGHT + "\nWelcome to LibGenX!" + Style.RESET_ALL)
@@ -34,6 +46,10 @@ def main():
 
     # get query from cli arguments
     query = get_query_arg()
+
+    # DEBUG read from file
+    # with open("table", "w") as f:
+    #     data = json.load(f)
 
     # main loop
     while True:
@@ -52,11 +68,15 @@ def main():
             query = None
             continue
         except ConnectionError as cerr:
-            if tries == 6:
-                close(f"\n{Fore.RED}{cerr}{Style.RESET_ALL}")
+            if tries == 4:
+                close(f"{Fore.RED}{cerr}{Style.RESET_ALL}\n")
             else:
                 tries += 1
-                print(f"\n{Fore.RED}{cerr}{Style.RESET_ALL}")
+                print(f"{Fore.RED}{cerr} Retrying in     ", end="")
+                for i in range(9, 0, -1):
+                    print(f"\b\b\b\b{i}", end="...", flush=True)
+                    sleep(1)
+                print(Style.RESET_ALL)
                 continue
         else:
             results = Results(request.results)
@@ -64,17 +84,29 @@ def main():
                   " entries found.")
             list_entries(results.entries)
 
+            # DEBUG saving to file
+            # with open("data.json", "w") as f:
+            #     for line in results.entries:
+            #         json.dump(line, f)
+
         # filter results, start new search or close application
         while True:
-            c = input("\nFilter results, new search or quit [f/s/q]: ").lower()
+            c = input("\nDownload, filter results, new search"
+                      " or quit [d/f/s/q]: ").lower()
             match c:
+
+                # TODO show details, download entry
+                case "d":
+                    print("details, download...")
+                    continue
 
                 # filter results
                 case "f":
-
                     # TODO get filtering sequence from the user
-                    filters = {'auth': "Jane Austen", 'ext': "pdf"}
-                    mode = "exact"
+                    # filters = {'auth': "Jane Austen", 'ext': "pdf"}
+                    # mode = "exact"
+                    seq = input("Filtering sequence: ")
+                    filters, mode = parse_filter_seq(seq)
                     print(f"\n{Style.BRIGHT}Filtering mode:{Style.RESET_ALL}"
                           f" {mode}")
                     print(f"{Style.BRIGHT}Filters{Style.RESET_ALL}")
@@ -94,9 +126,13 @@ def main():
                         print(f"\n{Fore.MAGENTA}{ferr}{Style.RESET_ALL}")
                         continue
                     else:
-                        print(f"{Style.BRIGHT}{len(results.entries)}"
-                              f"{Style.RESET_ALL} entries found.")
-                        list_entries(results.entries)
+                        if len(results.entries) > 0:
+                            print(f"{Style.BRIGHT}{len(results.entries)}"
+                                  f"{Style.RESET_ALL} entries found.")
+                            list_entries(results.entries)
+                        else:
+                            print(f"{Fore.MAGENTA}No matching entries found!"
+                                  f"{Style.RESET_ALL}")
                         continue
 
                 # new search
