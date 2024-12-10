@@ -3,19 +3,24 @@ LibGenX CLI script.
 """
 
 from sys import exit as close
+from re import findall
 from time import sleep
 from colorama import Style, Fore
-from libgentools import SearchRequest, Results, QueryError, FilterError
+from libgentools import *
 from libgenx_common import get_query_arg
 import json  # TEMP
 
 
 def list_entries(entries):
     """List results."""
+
+    # print header
     print(Style.BRIGHT + "\nNo.".ljust(6)
           + "Author".ljust(24) + "Title".ljust(34)
           + "Year".ljust(5) + "Pages".ljust(9) + "Extension".ljust(10)
           + "ID".ljust(11) + "\n" + "-" * 96 + Style.RESET_ALL)
+
+    # list entries
     for entry, i in zip(entries, range(len(entries))):
         auth = entry['auth']
         title = entry['title']
@@ -30,12 +35,27 @@ def list_entries(entries):
 
 
 def parse_filter_seq(seq):
-    """Interpret sequence and return a standard filter dictionary."""
-    filters = {}  # TEMP
-    mode = "exact"  # TEMP
-    # -x -a Jane Austen -e pdf
-    seq = seq.split()
-    print(seq)
+    """Interpret sequence and return filtering parameters."""
+
+    # filtering mode
+    if "-x" in seq:
+        mode = "exact"
+        seq = seq.replace("-x", "").strip().replace("  ", " ")
+    else:
+        mode = "partial"
+
+    # translate to the corresponding key-value pairs from libgentools.FILTERS
+    matches = findall(r"-(\w) (.*?)(?= -\w|$)", seq)
+    filters_raw = {f"-{key}": value.strip() for key, value in matches}
+
+    # validate filters
+    filters = {}
+    for key, value in filters_raw.items():
+        if key in FILTERS:
+            filters[FILTERS[key]] = value
+        else:
+            raise FilterError(f"Invalid filter: {key}")
+
     return filters, mode
 
 
@@ -47,22 +67,24 @@ def main():
     # get query from cli arguments
     query = get_query_arg()
 
+    # TODO get filters from cli arguments
+
     # DEBUG read from file
-    # with open("table", "w") as f:
-    #     data = json.load(f)
+    with open("data", "r") as f:
+        data = json.load(f)
 
     # main loop
     while True:
 
-        # get the query from the user if there is no cli query argument
+        # get query from the user if there is no cli query argument
         if not query:
             query = input("Enter search query: ")
         print(f"\n{Style.BRIGHT}Search query:{Style.RESET_ALL} {query}")
 
-        # get the results from LibGen
+        # get results from LibGen
         try:
             print("Fetching results from LibGen...")
-            request = SearchRequest(query)
+            # request = SearchRequest(query)
         except QueryError as qerr:
             print(f"\n{Fore.MAGENTA}{qerr}{Style.RESET_ALL}")
             query = None
@@ -79,17 +101,18 @@ def main():
                 print(Style.RESET_ALL)
                 continue
         else:
-            results = Results(request.results)
+            # results = Results(request.results)
+            results = Results(data)
             print(f"{Style.BRIGHT}{len(results.entries)}{Style.RESET_ALL}"
                   " entries found.")
             list_entries(results.entries)
 
-            # DEBUG saving to file
-            # with open("data.json", "w") as f:
-            #     for line in results.entries:
-            #         json.dump(line, f)
+            # DEBUG save to file
+            # with open("data", "w") as f:
+            #     json.dump(results.entries, f)
 
-        # filter results, start new search or close application
+        # show details/download, filter results,
+        # start new search or close application
         while True:
             c = input("\nDownload, filter results, new search"
                       " or quit [d/f/s/q]: ").lower()
@@ -102,16 +125,20 @@ def main():
 
                 # filter results
                 case "f":
-                    # TODO get filtering sequence from the user
-                    # filters = {'auth': "Jane Austen", 'ext': "pdf"}
-                    # mode = "exact"
-                    seq = input("Filtering sequence: ")
-                    filters, mode = parse_filter_seq(seq)
-                    print(f"\n{Style.BRIGHT}Filtering mode:{Style.RESET_ALL}"
-                          f" {mode}")
-                    print(f"{Style.BRIGHT}Filters{Style.RESET_ALL}")
-                    for key, value in zip(filters.keys(), filters.values()):
-                        print(f"  {key + ':':<6} {value}")
+
+                    # get filtering sequence
+                    try:
+                        seq = input("Filtering sequence: ")
+                        filters, mode = parse_filter_seq(seq)
+                    except FilterError as ferr:
+                        print(f"\n{Fore.MAGENTA}{ferr}{Style.RESET_ALL}")
+                        continue
+                    else:
+                        print(f"\n{Style.BRIGHT}Filtering mode:"
+                              f"{Style.RESET_ALL} {mode}")
+                        print(f"{Style.BRIGHT}Filters{Style.RESET_ALL}")
+                        for key, value in zip(filters.keys(), filters.values()):
+                            print(f"  {key + ':':<6} {value}")
 
                     # apply filter and return filtered results
                     try:
