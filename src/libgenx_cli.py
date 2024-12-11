@@ -2,13 +2,14 @@
 LibGenX CLI script.
 """
 
-from sys import exit as close
+from sys import exit as close, argv
+from os.path import dirname, abspath
 from re import findall
 from time import sleep
 from colorama import Style, Fore
 from libgentools import *
 from libgenx_common import get_query_arg
-import json  # TEMP
+# import json  # TEMP
 
 
 def list_entries(entries):
@@ -70,8 +71,8 @@ def main():
     # TODO get filters from cli arguments
 
     # DEBUG read from file
-    with open("data", "r") as f:
-        data = json.load(f)
+    # with open("data", "r") as f:
+    #     data = json.load(f)
 
     # main loop
     while True:
@@ -84,7 +85,7 @@ def main():
         # get results from LibGen
         try:
             print("Fetching results from LibGen...")
-            # request = SearchRequest(query)
+            request = SearchRequest(query)
         except QueryError as qerr:
             print(f"\n{Fore.MAGENTA}{qerr}{Style.RESET_ALL}")
             query = None
@@ -101,8 +102,8 @@ def main():
                 print(Style.RESET_ALL)
                 continue
         else:
-            # results = Results(request.results)
-            results = Results(data)
+            results = Results(request.results)
+            # results = Results(data)
             print(f"{Style.BRIGHT}{len(results.entries)}{Style.RESET_ALL}"
                   " entries found.")
             list_entries(results.entries)
@@ -120,8 +121,52 @@ def main():
 
                 # TODO show details, download entry
                 case "d":
-                    print("details, download...")
-                    continue
+                    while True:
+                        num = input("Entry no. (press Return to cancel): ")
+                        if num == "":
+                            break
+                        try:
+                            num = int(num)
+                            if num < 1 or num > len(results.entries):
+                                raise ValueError
+                        except ValueError:
+                            print(f"\n{Fore.MAGENTA}"
+                                  f"Entry number must be between 1 and "
+                                  f"{len(results.entries)}!"
+                                  f"{Style.RESET_ALL}\n")
+                            continue
+                        else:
+                            entry = results.entries[num - 1]
+                            print(f"\n{Style.BRIGHT}Author:{Style.RESET_ALL}"
+                                  f" {entry['auth']}")
+                            print(f"{Style.BRIGHT}Title:{Style.RESET_ALL}"
+                                  f" {entry['title']}")
+                            print(f"{Style.BRIGHT}Publisher:{Style.RESET_ALL}"
+                                  f" {entry['pub']} ({entry['year']})")
+                            print(f"{Style.BRIGHT}Language:{Style.RESET_ALL}"
+                                  f" {entry['lang']}")
+                            print(f"{Style.BRIGHT}Pages, format:"
+                                  f"{Style.RESET_ALL}"
+                                  f" {entry['pp']} pp., {entry['ext']}\n")
+                            while True:
+                                c = input("Enter 'y' to download"
+                                          " (press Return to cancel): ").lower()
+                                if c == "":
+                                    break
+                                elif c == "y":
+                                    print(f"Downloading {entry['id']}:"
+                                          f" {entry['title']}...")
+                                    # TODO path: ../
+                                    path = dirname(abspath(argv[0]))
+                                    downloaded = results.download(entry, path)
+                                    if downloaded:
+                                        print("Done!")
+                                    else:
+                                        print("Downloading failed!")
+                                    break
+                                else:
+                                    continue
+                        break
 
                 # filter results
                 case "f":
