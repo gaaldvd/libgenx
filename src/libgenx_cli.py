@@ -3,13 +3,13 @@ LibGenX CLI script.
 """
 
 from sys import exit as close, argv
-from os.path import dirname, abspath
+from os.path import dirname, abspath, join
+from os import makedirs
 from re import findall
 from time import sleep
 from colorama import Style, Fore
 from libgentools import *
 from libgenx_common import get_query_arg
-# import json  # TEMP
 
 
 def list_entries(entries):
@@ -68,11 +68,8 @@ def main():
     # get query from cli arguments
     query = get_query_arg()
 
+    # TODO load and apply configs
     # TODO get filters from cli arguments
-
-    # DEBUG read from file
-    # with open("data", "r") as f:
-    #     data = json.load(f)
 
     # main loop
     while True:
@@ -103,14 +100,9 @@ def main():
                 continue
         else:
             results = Results(request.results)
-            # results = Results(data)
             print(f"{Style.BRIGHT}{len(results.entries)}{Style.RESET_ALL}"
                   " entries found.")
             list_entries(results.entries)
-
-            # DEBUG save to file
-            # with open("data", "w") as f:
-            #     json.dump(results.entries, f)
 
         # show details/download, filter results,
         # start new search or close application
@@ -119,8 +111,10 @@ def main():
                       " or quit [d/f/s/q]: ").lower()
             match c:
 
-                # TODO show details, download entry
+                # show details, download entry
                 case "d":
+
+                    # prompt for entry number
                     while True:
                         num = input("Entry no. (press Return to cancel): ")
                         if num == "":
@@ -135,6 +129,8 @@ def main():
                                   f"{len(results.entries)}!"
                                   f"{Style.RESET_ALL}\n")
                             continue
+
+                        # show details
                         else:
                             entry = results.entries[num - 1]
                             print(f"\n{Style.BRIGHT}Author:{Style.RESET_ALL}"
@@ -148,6 +144,8 @@ def main():
                             print(f"{Style.BRIGHT}Pages, format:"
                                   f"{Style.RESET_ALL}"
                                   f" {entry['pp']} pp., {entry['ext']}\n")
+
+                            # prompt for download
                             while True:
                                 c = input("Enter 'y' to download"
                                           " (press Return to cancel): ").lower()
@@ -156,8 +154,9 @@ def main():
                                 elif c == "y":
                                     print(f"Downloading {entry['id']}:"
                                           f" {entry['title']}...")
-                                    # TODO path: ../
-                                    path = dirname(abspath(argv[0]))
+                                    path = join(dirname(dirname(
+                                        abspath(argv[0]))), "downloads")
+                                    makedirs(path, exist_ok=True)
                                     downloaded = results.download(entry, path)
                                     if downloaded:
                                         print("Done!")
@@ -171,7 +170,7 @@ def main():
                 # filter results
                 case "f":
 
-                    # get filtering sequence
+                    # prompt for filtering sequence
                     try:
                         seq = input("Filtering sequence: ")
                         filters, mode = parse_filter_seq(seq)
@@ -219,7 +218,8 @@ def main():
 
                 # invalid command
                 case _:
-                    print("Available commands: [f]ilter, [s]earch, [q]uit!")
+                    print(f"{Fore.MAGENTA}Available commands:"
+                          f" [f]ilter, [s]earch, [q]uit!{Style.RESET_ALL}")
                     continue
 
 
