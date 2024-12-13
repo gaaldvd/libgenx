@@ -23,4 +23,6 @@ docs/source/*
 !docs/source/index.rst
 
 # Project specific files and directories
+downloads/*
 data
+dummy.py

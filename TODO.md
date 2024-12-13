@@ -2,13 +2,22 @@
 
 ## general
 
+- config file
+  - download path
+  - default filters (extension)
+
+## common module
+
+- load configs from config file
+
 ## scripts
 
 ### cli
 
-- show details, download
+- apply configs (common)
 - filtering
-  - handle exceptions
   - filtering cli arguments
+    - cli args overwrite configs! 
+  - handle exceptions
 
 ### gui
