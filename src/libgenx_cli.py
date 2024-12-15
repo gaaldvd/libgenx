@@ -9,7 +9,7 @@ from re import findall
 from time import sleep
 from colorama import Style, Fore
 from libgentools import *
-from libgenx_common import get_query_arg
+from libgenx_common import get_query_arg, load_config
 
 
 def list_entries(entries):
@@ -64,11 +64,14 @@ def main():
     """Main function of the LibGenX CLI script."""
     print(Style.BRIGHT + "\nWelcome to LibGenX!" + Style.RESET_ALL)
     tries = 0
+    request, results = None, None
+
+    # load configuration file
+    config = load_config()
 
     # get query from cli arguments
     query = get_query_arg()
 
-    # TODO load and apply configs
     # TODO get filters from cli arguments
 
     # main loop
@@ -81,7 +84,8 @@ def main():
 
         # get results from LibGen
         try:
-            print("Fetching results from LibGen...")
+            print(f"Fetching results from LibGen"
+                  f"{" (pdf only)" if config['pdfOnly'] else ""}...")
             request = SearchRequest(query)
         except QueryError as qerr:
             print(f"\n{Fore.MAGENTA}{qerr}{Style.RESET_ALL}")
@@ -100,6 +104,8 @@ def main():
                 continue
         else:
             results = Results(request.results)
+            if config['pdfOnly']:
+                results = results.filter_entries({'ext': "pdf"})
             print(f"{Style.BRIGHT}{len(results.entries)}{Style.RESET_ALL}"
                   " entries found.")
             list_entries(results.entries)
@@ -154,8 +160,10 @@ def main():
                                 elif c == "y":
                                     print(f"Downloading {entry['id']}:"
                                           f" {entry['title']}...")
-                                    path = join(dirname(dirname(
-                                        abspath(argv[0]))), "downloads")
+                                    path = (join(dirname(dirname(abspath(
+                                        argv[0]))), "downloads")
+                                            if config['downloadDir'] == ""
+                                            else config['downloadDir'])
                                     makedirs(path, exist_ok=True)
                                     downloaded = results.download(entry, path)
                                     if downloaded:

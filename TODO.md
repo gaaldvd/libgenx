@@ -1,20 +1,17 @@
-# LibGenx TODO
+# LibGenX TODO
 
 ## general
 
+- os-independent bash scripts
 - config file
-  - download path
-  - default filters (extension)
+  - english only?
 
 ## common module
-
-- load configs from config file
 
 ## scripts
 
 ### cli
 
-- apply configs (common)
 - filtering
   - filtering cli arguments
     - cli args overwrite configs! 
