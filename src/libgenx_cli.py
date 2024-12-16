@@ -9,7 +9,7 @@ from re import findall
 from time import sleep
 from colorama import Style, Fore
 from libgentools import *
-from libgenx_common import get_query_arg, load_config
+from libgenx_common import get_cli_args, load_config
 
 
 def list_entries(entries):
@@ -64,15 +64,13 @@ def main():
     """Main function of the LibGenX CLI script."""
     print(Style.BRIGHT + "\nWelcome to LibGenX!" + Style.RESET_ALL)
     tries = 0
-    request, results = None, None
+    request, results, filters = None, None, None
 
     # load configuration file
     config = load_config()
 
-    # get query from cli arguments
-    query = get_query_arg()
-
-    # TODO get filters from cli arguments
+    # get query and filters from cli arguments
+    query, seq = get_cli_args()
 
     # main loop
     while True:
@@ -82,9 +80,22 @@ def main():
             query = input("Enter search query: ")
         print(f"\n{Style.BRIGHT}Search query:{Style.RESET_ALL} {query}")
 
+        # show filters from cli arguments if there are any
+        if seq:
+            try:
+                filters, mode = parse_filter_seq(seq)
+            except FilterError as ferr:
+                print(f"\n{Fore.MAGENTA}{ferr}{Style.RESET_ALL}\n")
+            else:
+                print(f"{Style.BRIGHT}Filtering mode:"
+                      f"{Style.RESET_ALL} {mode}")
+                print(f"{Style.BRIGHT}Filters{Style.RESET_ALL}")
+                for key, value in zip(filters.keys(), filters.values()):
+                    print(f"  {key + ':':<6} {value}")
+
         # get results from LibGen
         try:
-            print(f"Fetching results from LibGen"
+            print(f"\nFetching results from LibGen"
                   f"{" (pdf only)" if config['pdfOnly'] else ""}...")
             request = SearchRequest(query)
         except QueryError as qerr:
@@ -104,6 +115,8 @@ def main():
                 continue
         else:
             results = Results(request.results)
+            if filters:
+                results = results.filter_entries(filters, mode)
             if config['pdfOnly']:
                 results = results.filter_entries({'ext': "pdf"})
             print(f"{Style.BRIGHT}{len(results.entries)}{Style.RESET_ALL}"
@@ -157,7 +170,7 @@ def main():
                                           " (press Return to cancel): ").lower()
                                 if c == "":
                                     break
-                                elif c == "y":
+                                if c == "y":
                                     print(f"Downloading {entry['id']}:"
                                           f" {entry['title']}...")
                                     path = (join(dirname(dirname(abspath(
@@ -171,8 +184,7 @@ def main():
                                     else:
                                         print("Downloading failed!")
                                     break
-                                else:
-                                    continue
+                                continue
                         break
 
                 # filter results
@@ -182,6 +194,7 @@ def main():
                     try:
                         seq = input("Filtering sequence: ")
                         filters, mode = parse_filter_seq(seq)
+                        seq = None
                     except FilterError as ferr:
                         print(f"\n{Fore.MAGENTA}{ferr}{Style.RESET_ALL}")
                         continue

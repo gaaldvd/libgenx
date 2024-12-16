@@ -26,3 +26,4 @@ docs/source/*
 downloads/*
 data
 dummy.py
+test.py
