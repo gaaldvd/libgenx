@@ -7,6 +7,7 @@ name = "pypi"
 libgentools = "*"
 beautifulsoup4 = "*"
 colorama = "*"
+pyside6 = "*"
 
 [dev-packages]
 

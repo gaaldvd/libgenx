@@ -2,15 +2,13 @@
 LibGenX CLI script.
 """
 
-from sys import exit as close, argv
+from sys import exit as close
 from os.path import dirname, abspath, join
 from os import makedirs
-from re import findall
 from time import sleep
 from colorama import Style, Fore
 from libgentools import *
-from libgenx_common import get_cli_args, load_config
-
+from libgenx_common import *
 
 def list_entries(entries):
     """List results."""
@@ -34,37 +32,11 @@ def list_entries(entries):
               f" {title[:30] + '...' if len(title) > 30 else title:<33}"
               f" {year:<4} {pp[:8]:<8} {ext:<9} {eid:<10}")
 
-
-def parse_filter_seq(seq):
-    """Interpret sequence and return filtering parameters."""
-
-    # filtering mode
-    if "-x" in seq:
-        mode = "exact"
-        seq = seq.replace("-x", "").strip().replace("  ", " ")
-    else:
-        mode = "partial"
-
-    # translate to the corresponding key-value pairs from libgentools.FILTERS
-    matches = findall(r"-(\w) (.*?)(?= -\w|$)", seq)
-    filters_raw = {f"-{key}": value.strip() for key, value in matches}
-
-    # validate filters
-    filters = {}
-    for key, value in filters_raw.items():
-        if key in FILTERS:
-            filters[FILTERS[key]] = value
-        else:
-            raise FilterError(f"Invalid filter: {key}")
-
-    return filters, mode
-
-
 def main():
     """Main function of the LibGenX CLI script."""
     print(Style.BRIGHT + "\nWelcome to LibGenX!" + Style.RESET_ALL)
     tries = 0
-    request, results, filters = None, None, None
+    request, results, filters, mode = None, None, None, "partial"
 
     # load configuration file
     config = load_config()
@@ -242,7 +214,6 @@ def main():
                     print(f"{Fore.MAGENTA}Available commands:"
                           f" [f]ilter, [s]earch, [q]uit!{Style.RESET_ALL}")
                     continue
-
 
 if __name__ == '__main__':
     main()
